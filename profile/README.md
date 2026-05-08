@@ -1,21 +1,17 @@
 # Metabind
 
-The first Native Mobile CMS that manages both content and UI for iOS and Android apps.
-
-Unlike traditional headless CMS platforms that only manage content data, Metabind enables instant over-the-air updates to layouts, flows, and experiences -- all while maintaining true native rendering quality with SwiftUI and Jetpack Compose.
+Ship an MCP App in minutes. Wrap your APIs, render your components, and publish to Claude, ChatGPT, and every MCP host -- or embed as an AI assistant inside your own app.
 
 ## SDKs
 
-| Platform | Package | Install |
-|----------|---------|---------|
-| **iOS / macOS** | [metabind-apple](https://github.com/metabindai/metabind-apple) | Swift Package Manager |
-| **Android** | [metabind-android](https://github.com/metabindai/metabind-android) | Maven (GitHub Packages) |
+| Platform | Package |
+|----------|---------|
+| **iOS / macOS / visionOS** | [metabind-apple](https://github.com/metabindai/metabind-apple) |
+| **Android** | [metabind-android](https://github.com/metabindai/metabind-android) |
 
-## AI / MCP
+## Assistant SDK
 
-| Package | Description |
-|---------|-------------|
-| [metabind-ai-apple](https://github.com/metabindai/metabind-ai-apple) | Native MCP host framework for rendering interactive tool results as SwiftUI views |
+[metabind-ai-apple](https://github.com/metabindai/metabind-ai-apple) -- Native MCP host framework. Render interactive tool results as SwiftUI views, with a drop-in conversational assistant powered by the Metabind Agent proxy.
 
 ## CLI
 
@@ -28,3 +24,4 @@ brew install metabind
 
 - [Website](https://metabind.ai)
 - [Documentation](https://docs.metabind.ai)
+- [Pricing](https://metabind.ai/pricing)
