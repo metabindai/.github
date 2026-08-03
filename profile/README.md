@@ -4,70 +4,25 @@
 
 **Everything that ships inside your app lives in this org, under Apache 2.0**: the BindJS runtime, all three renderers (SwiftUI, Jetpack Compose, React), and all three client SDKs. Nothing proprietary in your client path.
 
----
-
-## The BindJS engine
-
-Components are written once in BindJS, a declarative, SwiftUI-shaped component language. This is what the agent renders when a customer asks about a product:
-
-```typescript
-const properties = {
-  name: PropertyString({ title: "Name", required: true, defaultValue: "Trail Runner 2" }),
-  price: PropertyString({ title: "Price", required: true, defaultValue: "$129" }),
-  imageUrl: PropertyString({ title: "Image URL", required: true }),
-  inStock: PropertyBoolean({ title: "In stock", defaultValue: true }),
-}
-
-const body = (props) =>
-  VStack({ spacing: 12, alignment: "leading" }, [
-    Image({ url: props.imageUrl, contentMode: "fill" })
-      .frame({ height: 180 })
-      .cornerRadius(16),
-
-    Text(props.name).font("headline"),
-
-    HStack({ spacing: 8 }, [
-      Text(props.price).font("title3").fontWeight("bold"),
-      props.inStock
-        ? Text("In stock").font("caption").foregroundStyle(Color("green"))
-        : Text("Sold out").font("caption").foregroundStyle(Color("secondary")),
-    ]),
-
-    Button("Add to cart", () => console.log("add to cart:", props.name)),
-  ]).padding(16)
-
-export default defineComponent({
-  metadata: {
-    title: "Product card",
-    description: "Rendered inline when the agent answers a product question",
-  },
-  properties,
-  body,
-})
-```
-
-The same definition renders as real platform components on every surface. Not web views on mobile: the schema generates typed `props`, validates every render, and each renderer reads the same compiled bundle.
-
-| Surface | Renderer |
-|---|---|
-| MCP hosts (Claude, ChatGPT, VS Code, Cursor) | [`@metabindai/bindjs-react`](https://github.com/metabindai/bindjs-runtime) in a sandboxed iframe |
-| Your iOS app | [`bindjs-apple`](https://github.com/metabindai/bindjs-apple) → native SwiftUI |
-| Your Android app | [`bindjs-android`](https://github.com/metabindai/bindjs-android) → Jetpack Compose |
-| Your web app | [`@metabindai/bindjs-react`](https://github.com/metabindai/bindjs-runtime) → React |
-
-| Repo | What it is |
-|---|---|
-| [`bindjs-runtime`](https://github.com/metabindai/bindjs-runtime) | The canonical BindJS runtime and React renderer. On npm as `@metabindai/bindjs-runtime` and `@metabindai/bindjs-react` |
-| [`bindjs-apple`](https://github.com/metabindai/bindjs-apple) | The SwiftUI rendering engine (SwiftPM, product `BindJS`) |
-| [`bindjs-android`](https://github.com/metabindai/bindjs-android) | The Jetpack Compose rendering engine (`ai.metabind:bindjs-android`) |
-
-Full language reference: [BindJS docs](https://docs.metabind.ai/bindjs/introduction) — 60+ components, 40+ modifiers, state, hooks, and styles.
+[**metabind.ai**](https://metabind.ai) (live demo) · [**Documentation**](https://docs.metabind.ai) · [**Your first MCP App**](https://docs.metabind.ai/guides/getting-started/your-first-mcp-app) · [**BindJS reference**](https://docs.metabind.ai/bindjs/introduction)
 
 ---
+
+## BindJS: one definition, three renderers
+
+BindJS is the declarative, SwiftUI-shaped component language behind every Interactive Tool: 60+ components, 40+ modifiers, typed props generated from a property schema, and validation on every render. You write a component once. Each platform's renderer reads the same compiled bundle and renders real platform components, not web views on mobile.
+
+| Repo | Renders | Packages |
+|---|---|---|
+| [`bindjs-runtime`](https://github.com/metabindai/bindjs-runtime) | React, in MCP hosts (Claude, ChatGPT, VS Code, Cursor) via sandboxed iframe, and in your web app | npm: `@metabindai/bindjs-runtime`, `@metabindai/bindjs-react` |
+| [`bindjs-apple`](https://github.com/metabindai/bindjs-apple) | Native SwiftUI in your iOS, macOS, or visionOS app | SwiftPM, product `BindJS` |
+| [`bindjs-android`](https://github.com/metabindai/bindjs-android) | Jetpack Compose in your Android app | `ai.metabind:bindjs-android` |
+
+Start with the [quickstart](https://docs.metabind.ai/bindjs/quickstart), or read the [language reference](https://docs.metabind.ai/bindjs/introduction).
 
 ## The Assistant SDK
 
-The embed path. A governed agent runs **inside your product**, calling tools you built in Metabind, rendered with your components on your typography and color. It follows your project instructions and renders only your approved components — your users never leave your app.
+The embed path. A governed agent runs inside your product, calling tools you built in Metabind, rendered with your components on your typography and color. It follows your project instructions and renders only your approved components. Your users never leave your app.
 
 ```swift
 import MetabindAI
@@ -86,17 +41,15 @@ let assistant = MetabindAssistant(
 MetabindAssistantView(assistant: assistant)
 ```
 
-`MetabindAssistantView` renders the conversation, streams responses, and renders Interactive Tool output as native SwiftUI inline — respecting your app's color scheme, dynamic type, and accessibility settings. Same model on every platform: `MetabindAssistantView` in Compose, `<AgentChat />` in React.
+Same model on every platform: `MetabindAssistantView` in SwiftUI and Compose, `<AgentChat />` in React. Conversation UI, streaming, and Interactive Tool rendering are handled for you, respecting your app's color scheme, dynamic type, and accessibility settings.
 
-| Platform | Package | Renders via | Working example |
+| Platform | Repo | Package | Working example |
 |---|---|---|---|
-| iOS / macOS / visionOS | `MetabindAI`, a product of [`metabind-apple`](https://github.com/metabindai/metabind-apple) | SwiftUI (`bindjs-apple`) | [Assistant demo](https://github.com/metabindai/metabind-apple/tree/main/Samples/MetabindAI/AssistantDemo) |
-| Android | `ai.metabind:metabindai-android` from [`metabind-android`](https://github.com/metabindai/metabind-android) | Jetpack Compose (`bindjs-android`) | [Assistant demo](https://github.com/metabindai/metabind-android/tree/main/samples/assistant-demo) |
-| Web | [`@metabindai/agent-ui`](https://github.com/metabindai/metabind-web) from `metabind-web` | React | [Example app](https://github.com/metabindai/metabind-web/tree/main/examples/example-metabind-react-app) |
+| iOS / macOS / visionOS | [`metabind-apple`](https://github.com/metabindai/metabind-apple) | `MetabindAI` (SwiftPM product) | [Assistant demo](https://github.com/metabindai/metabind-apple/tree/main/Samples/MetabindAI/AssistantDemo) |
+| Android | [`metabind-android`](https://github.com/metabindai/metabind-android) | `ai.metabind:metabindai-android` | [Assistant demo](https://github.com/metabindai/metabind-android/tree/main/samples/assistant-demo) |
+| Web | [`metabind-web`](https://github.com/metabindai/metabind-web) | `@metabindai/agent-ui` | [Example app](https://github.com/metabindai/metabind-web/tree/main/examples/example-metabind-react-app) |
 
-The SDKs also ship the content layer (GraphQL client, caching, real-time updates) — each library is independently adoptable. LLM access goes through the Metabind Agent proxy by default: the key stays server-side, and every call lands in your tool-call analytics. Guide: [Embed an assistant](https://docs.metabind.ai/guides/getting-started/embed-an-assistant).
-
----
+Each SDK also ships the content layer (GraphQL client, caching, real-time updates), and the libraries are independently adoptable. LLM access goes through the Metabind Agent proxy by default: the key stays server-side, and every call lands in your tool-call analytics. Guide: [Embed an assistant](https://docs.metabind.ai/guides/getting-started/embed-an-assistant).
 
 ## CLI
 
@@ -110,8 +63,6 @@ brew install metabindai/tap/metabind
 
 Apache 2.0, in this org: the component language, the runtime, every renderer, every client SDK. The hosted platform is the commercial product: MCP App Studio, the generated MCP server, the agent proxy, governance, analytics. The protocol path is standard MCP and standard JSON Schema, and tool definitions, schemas, and components are exportable.
 
-## Start here
+---
 
-- [metabind.ai](https://metabind.ai) — the live demo. Free to start, no credit card.
-- [Your first MCP App](https://docs.metabind.ai/guides/getting-started/your-first-mcp-app)
-- [Documentation](https://docs.metabind.ai) · [BindJS reference](https://docs.metabind.ai/bindjs/introduction)
+**Make your app think.** [Start free](https://metabind.ai). No credit card. No sales call. No server to run.
